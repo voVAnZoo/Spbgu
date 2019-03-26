@@ -12,9 +12,9 @@ import java.util.List;
  */
 public class Main extends JFrame{
 
-    public int friq = 0;
+    public int friq = 1;
     public Timer timer = null;
-    public Dimension sSize = Toolkit.getDefaultToolkit ().getScreenSize ();
+    public Dimension sSize = Toolkit.getDefaultToolkit().getScreenSize();
     public int mouseX = 0;
     public int mouseY = 0;
     public int touch = -1;
@@ -23,6 +23,7 @@ public class Main extends JFrame{
     public List<Double> k = new ArrayList<Double>();
     public double energy = 0;
     public boolean shift = false;
+    public static int type = 0;
 
     public double energyLossFloor = 0;
     public double energyLossRoof = 0;
@@ -33,13 +34,16 @@ public class Main extends JFrame{
     public boolean roof = false;
     public boolean leftWall = false;
     public boolean rightWall = false;
+    public int fps = 0;
 
     public static void main(String[] args)  {
         int n = 0;
         double dt = 0.0015;
+        type = -1;
         try {
             n = Integer.parseInt(args[0]);
             dt = Double.parseDouble(args[1]);
+            type = Integer.parseInt(args[2]);
         }catch (Exception e){
             if(n == 0){
                 n = 2;
@@ -54,7 +58,7 @@ public class Main extends JFrame{
 
         Body.dt = dt;
         GUIBuild();
-        initN(n);
+        init(n);
 
         timer = new Timer(friq, new ActionListener() {
             @Override
@@ -72,29 +76,41 @@ public class Main extends JFrame{
 
                         allBody.get(i).action(f*cos,f*sin);
                         allBody.get(i - 1).action(-1*f*cos,-1*f*sin);
+                        allBody.get(i).action(0, Body.g*allBody.get(i).getMass());
 
                         en += (k.get(i - 1)*(dl - l.get(i - 1))*(dl - l.get(i - 1)))/2;
-                    }
-                }
-
-                for(int i = 0;i < allBody.size();i++) {
-                    allBody.get(i).action();
-
-                    if (i != 0) {
-                        en += Math.pow(allBody.get(i).getSpeedX(), 2) * allBody.get(i).getMass() / 2;
-                        en += Math.pow(allBody.get(i).getSpeedY(), 2) * allBody.get(i).getMass() / 2;
+                        en += allBody.get(i).getKineticEnergy();
 
                         en -= allBody.get(i).getMass()*Body.g*allBody.get(i).getY();
                     }
                 }
 
+                for(int i = 0;i < allBody.size();i++) {
+                    allBody.get(i).action();
+                }
+
                 energy = en;
-                en = 0;
             }
         });
+
+        fps = 120;
     }
 
     public void init(int n){
+        switch (type){
+            case 0:
+                initD(n);
+                break;
+            case 1:
+                initN(n);
+                break;
+            default:
+                initD(n);
+                break;
+        }
+    }
+
+    public void initD(int n){
         allBody.clear();
         l.clear();
         k.clear();
@@ -121,7 +137,7 @@ public class Main extends JFrame{
         k.clear();
 
         for(int i = 0; i <= n;i++){
-            Body a = new Body(20 + (i* sSize.getWidth() - 40*i)/n,sSize.getHeight()/2);
+            Body a = new Body(20 + (i* sSize.getWidth() - 50*i)/n,sSize.getHeight()/2);
 
             if(i == 0){
                 a.setPillar(true);
@@ -255,11 +271,10 @@ public class Main extends JFrame{
         final JMenuItem restartItem = new JMenuItem("restart");
         restartItem.setFont(font);
         settingsMenu.add(restartItem);
-
         restartItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                initN(allBody.size()-1);
+                init(allBody.size()-1);
             }
         });
 
@@ -273,7 +288,7 @@ public class Main extends JFrame{
                 int n;
                 try {
                     n = Integer.parseInt(s);
-                    initN(n);
+                    init(n);
                 }catch (Exception ee){}
             }
         });
@@ -352,8 +367,12 @@ public class Main extends JFrame{
         final JCheckBox energyChek = new JCheckBox("energy");
         viewMenu.add(energyChek);
 
+        final JMenu conditionsMenu = new JMenu("initial conditions");
+        conditionsMenu.setFont(font);
+        menuBar.add(conditionsMenu);
+
         final JSlider js = new JSlider(JSlider.HORIZONTAL,0,100,1);
-        js.setValue((int) (Body.dt*10000));
+        js.setValue((int) (Body.dt * 10000));
 
         js.addChangeListener(new ChangeListener() {
             @Override
@@ -369,13 +388,16 @@ public class Main extends JFrame{
             Graphics2D g2;
 
             protected void paintComponent(Graphics g) {
+
+                //double t1 = System.nanoTime();
+
                 super.paintComponent(g);
                 g2 = (Graphics2D) g;
 
                 for(int i = 0;i < allBody.size();i++){
 
                     g2.setColor(Color.black);
-                    //allBody.get(i).draw(g2);
+                    allBody.get(i).draw(g2);
 
                     if (i != 0){
                         g2.drawLine((int) allBody.get(i).getX(),(int) allBody.get(i).getY(),
@@ -408,6 +430,16 @@ public class Main extends JFrame{
                 if(energyChek.isSelected()) {
                     g2.drawString(Double.toString(energy), 10, 10);
                 }
+
+                /*double t2 = System.nanoTime();
+                double dt = t2 - t1;
+
+                if((1000 / fps) - dt/1000000 > 0){
+                    try {
+                        wait((long) ((1000 / fps) - dt/1000000));
+                    } catch (InterruptedException e) {
+                    }
+                }*/
 
                 repaint();
             }

@@ -5,6 +5,9 @@ import java.awt.*;
  */
 public class Body {
 
+    static double g = 100;
+    static double dt = 0.0015;
+
     double x;
     double y;
 
@@ -12,13 +15,10 @@ public class Body {
     double speedY;
 
     double mass;
-    static double g = 100;
+    int radius;
 
     boolean taken;
     boolean pillar;
-
-    static double dt = 0.0015;
-
 
     public Body(){
         this.x = 0;
@@ -31,7 +31,7 @@ public class Body {
         speedY = 0;
 
         mass = 10;
-
+        radius = 10;
     }
 
     public Body(int x, int y){
@@ -45,6 +45,7 @@ public class Body {
         speedY = 0;
 
         mass = 10;
+        radius = 10;
     }
 
     public Body(double x, double y){
@@ -58,13 +59,14 @@ public class Body {
         speedY = 0;
 
         mass = 10;
+        radius = 10;
     }
 
     public void action(){
         if(!pillar){
             if(!taken){
-                x += speedX*dt;
-                y += speedY*dt;
+                x += speedX * dt;
+                y += speedY * dt;
             }else {
                 speedX = 0;
                 speedY = 0;
@@ -73,20 +75,17 @@ public class Body {
     }
 
     public void action(double fx, double fy){
-
         if (!pillar) {
             this.speedY += (fy / mass) * dt;
-            this.speedY += (g) * dt;
             this.speedX += (fx / mass) * dt;
         }
-
     }
 
     public void draw(Graphics2D g2){
         if(pillar){
-            g2.fillRect((int)x-10,(int)y-10,20,20);
+            g2.fillRect((int)x - radius,(int)y - radius,2 * radius,2 * radius);
         }else {
-            g2.drawOval((int)x-10,(int)y-10,20,20);
+            g2.drawOval((int)x - radius,(int)y - radius,2 * radius,2 * radius);
         }
     }
 
@@ -141,6 +140,14 @@ public class Body {
 
     public double getMass() {
         return mass;
+    }
+
+    public double getSpeed2() {
+        return (speedX * speedX) + (speedY * speedY);
+    }
+
+    public double getKineticEnergy(){
+        return getSpeed2() * mass / 2;
     }
 
     public boolean isTaken() {
