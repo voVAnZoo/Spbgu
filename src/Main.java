@@ -46,7 +46,7 @@ public class Main extends JFrame{
             type = Integer.parseInt(args[2]);
         }catch (Exception e){
             if(n == 0){
-                n = 2;
+                n = 1000;
             }
         }
 
@@ -57,8 +57,9 @@ public class Main extends JFrame{
         super("SPBGU");
 
         Body.dt = dt;
-        GUIBuild();
+
         init(n);
+        GUIBuild();
 
         timer = new Timer(friq, new ActionListener() {
             @Override
@@ -128,13 +129,14 @@ public class Main extends JFrame{
             allBody.add(a);
         }
 
-        setVisible(true);
     }
 
     public void initN(int n){
         allBody.clear();
         l.clear();
         k.clear();
+        Body.g = 0.0;
+
 
         for(int i = 0; i <= n;i++){
             Body a = new Body(20 + (i* sSize.getWidth() - 50*i)/n,sSize.getHeight()/2);
@@ -150,8 +152,6 @@ public class Main extends JFrame{
         }
 
         allBody.get(n).setPillar(true);
-
-        setVisible(true);
     }
 
     public void GUIBuild(){
@@ -393,7 +393,6 @@ public class Main extends JFrame{
 
                 super.paintComponent(g);
                 g2 = (Graphics2D) g;
-
                 for(int i = 0;i < allBody.size();i++){
 
                     g2.setColor(Color.black);
@@ -523,5 +522,7 @@ public class Main extends JFrame{
 
             }
         });
+
+        setVisible(true);
     }
 }
