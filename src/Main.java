@@ -145,7 +145,7 @@ public class Main extends JFrame{
                 a.setPillar(true);
             }else{
                 l.add(0.0);
-                k.add(70.0);
+                k.add(750.0);
             }
 
             allBody.add(a);
