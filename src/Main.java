@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class Main extends JFrame{
 
-    public int friq = 1;
+    public int friq = 0;
     public Timer timer = null;
     public Dimension sSize = Toolkit.getDefaultToolkit().getScreenSize();
     public int mouseX = 0;
@@ -23,7 +23,7 @@ public class Main extends JFrame{
     public List<Double> k = new ArrayList<Double>();
     public double energy = 0;
     public boolean shift = false;
-    public static int type = 0;
+    public static int type = 1;
 
     public double energyLossFloor = 0;
     public double energyLossRoof = 0;
@@ -39,7 +39,7 @@ public class Main extends JFrame{
     public static void main(String[] args)  {
         int n = 0;
         double dt = 0.0015;
-        type = -1;
+        type = 1;
         try {
             n = Integer.parseInt(args[0]);
             dt = Double.parseDouble(args[1]);
@@ -397,7 +397,7 @@ public class Main extends JFrame{
                 for(int i = 0;i < allBody.size();i++){
 
                     g2.setColor(Color.black);
-                    allBody.get(i).draw(g2);
+                    //allBody.get(i).draw(g2);
 
                     if (i != 0){
                         g2.drawLine((int) allBody.get(i).getX(),(int) allBody.get(i).getY(),
