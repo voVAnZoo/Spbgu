@@ -23,7 +23,9 @@ public class Main extends JFrame{
     public double energy = 0;
     public boolean shift = false;
     public static int type = 1;
+
     public double mu = 0.5;
+    public int delay = 1;
 
     public double energyLossFloor = 0;
     public double energyLossRoof = 0;
@@ -34,7 +36,7 @@ public class Main extends JFrame{
     public boolean roof = false;
     public boolean leftWall = false;
     public boolean rightWall = false;
-    public int fps = 0;
+
     public boolean timerStart = false;
 
     public static void main(String[] args)  {
@@ -99,7 +101,6 @@ public class Main extends JFrame{
         Thread thread = new Thread(new Runnable() {
             public void run() {
 
-
                 while (true) {
                     if (timer.isRunning()) {
                         if (!timerStart) {
@@ -115,7 +116,6 @@ public class Main extends JFrame{
         });
         thread.start();
 
-        fps = 120;
     }
 
     public void init(int n){
@@ -158,7 +158,6 @@ public class Main extends JFrame{
         k.clear();
         Body.g = 0.0;
 
-
         for(int i = 0; i <= n;i++){
             Body a = new Body(20 + (i* sSize.getWidth() - 50*i)/n,sSize.getHeight()/2);
 
@@ -177,7 +176,7 @@ public class Main extends JFrame{
 
     public void GUIBuild(){
         setBounds(0, 0, sSize.width, sSize.height);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLayout(null);
 
         final Font font = new Font("Verdana", Font.PLAIN, 13);
@@ -188,21 +187,18 @@ public class Main extends JFrame{
 
         final JMenu boxMenu = new JMenu("box");
         boxMenu.setFont(font);
-        settingsMenu.add(boxMenu);
+//        settingsMenu.add(boxMenu);
 
         final JCheckBox cbf = new JCheckBox("floor");
         final JSlider sf = new JSlider(JSlider.HORIZONTAL,0,100,0);
         sf.setEnabled(false);
-        cbf.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                if(cbf.isSelected()){
-                    floor = true;
-                    sf.setEnabled(true);
-                }else {
-                    floor = false;
-                    sf.setEnabled(false);
-                }
+        cbf.addChangeListener(e -> {
+            if(cbf.isSelected()){
+                floor = true;
+                sf.setEnabled(true);
+            }else {
+                floor = false;
+                sf.setEnabled(false);
             }
         });
         sf.addChangeListener(e -> energyLossFloor = ((double) sf.getValue())/100);
@@ -213,24 +209,16 @@ public class Main extends JFrame{
         final JCheckBox cbr = new JCheckBox("roof");
         final JSlider sr = new JSlider(JSlider.HORIZONTAL,0,100,0);
         sr.setEnabled(false);
-        cbr.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                if(cbr.isSelected()){
-                    roof = true;
-                    sr.setEnabled(true);
-                }else {
-                    roof = false;
-                    sr.setEnabled(false);
-                }
+        cbr.addChangeListener(e -> {
+            if(cbr.isSelected()){
+                roof = true;
+                sr.setEnabled(true);
+            }else {
+                roof = false;
+                sr.setEnabled(false);
             }
         });
-        sr.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                energyLossRoof = ((double) sr.getValue())/100;
-            }
-        });
+        sr.addChangeListener(e -> energyLossRoof = ((double) sr.getValue())/100);
         boxMenu.add(cbr);
         boxMenu.add(sr);
         boxMenu.addSeparator();
@@ -238,24 +226,16 @@ public class Main extends JFrame{
         final JCheckBox cbwr = new JCheckBox("left wall");
         final JSlider swr = new JSlider(JSlider.HORIZONTAL,0,100,0);
         swr.setEnabled(false);
-        cbwr.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                if(cbwr.isSelected()){
-                    rightWall = true;
-                    swr.setEnabled(true);
-                }else {
-                    rightWall = false;
-                    swr.setEnabled(false);
-                }
+        cbwr.addChangeListener(e -> {
+            if(cbwr.isSelected()){
+                rightWall = true;
+                swr.setEnabled(true);
+            }else {
+                rightWall = false;
+                swr.setEnabled(false);
             }
         });
-        swr.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                energyLossRightWall = ((double) sf.getValue())/100;
-            }
-        });
+        swr.addChangeListener(e -> energyLossRightWall = ((double) sf.getValue())/100);
         boxMenu.add(cbwr);
         boxMenu.add(swr);
         boxMenu.addSeparator();
@@ -263,77 +243,74 @@ public class Main extends JFrame{
         final JCheckBox cbwl = new JCheckBox("right wall");
         final JSlider swl = new JSlider(JSlider.HORIZONTAL,0,100,0);
         swl.setEnabled(false);
-        cbwl.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                if(cbwl.isSelected()){
-                    leftWall = true;
-                    swl.setEnabled(true);
-                }else {
-                    leftWall = false;
-                    swl.setEnabled(false);
-                }
+        cbwl.addChangeListener(e -> {
+            if(cbwl.isSelected()){
+                leftWall = true;
+                swl.setEnabled(true);
+            }else {
+                leftWall = false;
+                swl.setEnabled(false);
             }
         });
-        swl.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                energyLossLeftWall = ((double) swl.getValue())/100;
-            }
-        });
+        swl.addChangeListener(e -> energyLossLeftWall = ((double) swl.getValue())/100);
         boxMenu.add(cbwl);
         boxMenu.add(swl);
 
         final JMenuItem restartItem = new JMenuItem("restart");
         restartItem.setFont(font);
         settingsMenu.add(restartItem);
-        restartItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                init(allBody.size()-1);
-            }
-        });
+        restartItem.addActionListener(e -> init(allBody.size()-1));
 
         final JMenuItem amountItem = new JMenuItem("set amount");
         amountItem.setFont(font);
         settingsMenu.add(amountItem);
-        amountItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String s = JOptionPane.showInputDialog(null,"enter the amount of bodies");
-                int n;
-                try {
-                    n = Integer.parseInt(s);
-                    init(n);
-                }catch (Exception ee){}
-            }
+        amountItem.addActionListener(e -> {
+            String s = JOptionPane.showInputDialog(null,"enter the amount of bodies");
+            int n;
+            try {
+                n = Integer.parseInt(s);
+                init(n);
+            }catch (Exception ignored){}
         });
 
         settingsMenu.addSeparator();
 
-        final JMenu gMenu = new JMenu("g ( " + ((double)Body.g)/10 + " )");
+        final JMenu gMenu = new JMenu("g ( " + Body.g /10 + " )");
         gMenu.setFont(font);
         settingsMenu.add(gMenu);
-        final JSlider gSlider = new JSlider(JSlider.HORIZONTAL,0,500,100);
-        gSlider.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                Body.g = gSlider.getValue();
-                gMenu.setText("g ( " + ((double)Body.g)/10 + " )");
-            }
+        final JSlider gSlider = new JSlider(JSlider.HORIZONTAL,0,500, (int)Body.g);
+        gSlider.addChangeListener(e -> {
+            Body.g = gSlider.getValue();
+            gMenu.setText("g ( " + Body.g/10 + " )");
         });
         gMenu.add(gSlider);
+
+        final JMenu muMenu = new JMenu("nu (" + mu + " )");
+        gMenu.setFont(font);
+        settingsMenu.add(muMenu);
+        final JSlider muSlider = new JSlider(JSlider.HORIZONTAL,0,100, (int)(mu*100));
+        muSlider.addChangeListener(e -> {
+            mu = (double)muSlider.getValue() / 100;
+            muMenu.setText("nu (" + mu + " )");
+        });
+        muMenu.add(muSlider);
+
+        final JMenu delayMenu = new JMenu("delay (" + delay + " )");
+        delayMenu.setFont(font);
+        settingsMenu.add(delayMenu);
+        final JSlider delaySlider = new JSlider(JSlider.HORIZONTAL, 0, 30, delay);
+        delaySlider.addChangeListener(e -> {
+            delay = delaySlider.getValue();
+            delayMenu.setText("delay (" + delay + " )");
+        });
+        delayMenu.add(delaySlider);
 
         settingsMenu.addSeparator();
 
         final JMenuItem exitItem = new JMenuItem("Exit");
         exitItem.setFont(font);
         settingsMenu.add(exitItem);
-        exitItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
+        exitItem.addActionListener(e -> System.exit(0));
 
         menuBar.add(settingsMenu);
         setJMenuBar(menuBar);
@@ -361,16 +338,13 @@ public class Main extends JFrame{
                 }
             }
         });
-        b.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (timerStart) {
-                    b.setText("start");
-                } else {
-                    b.setText("stop ");
-                }
-                timerStart = !timerStart;
+        b.addActionListener(e -> {
+            if (timerStart) {
+                b.setText("start");
+            } else {
+                b.setText("stop ");
             }
+            timerStart = !timerStart;
         });
 
         final JMenu viewMenu = new JMenu("view");
@@ -396,16 +370,24 @@ public class Main extends JFrame{
         conditionsMenu.setFont(font);
         menuBar.add(conditionsMenu);
 
+        final JMenuItem restNItem = new JMenuItem("restart as string");
+        restNItem.addActionListener(e -> {
+            type = 1;
+            init(allBody.size()-1);
+        });
+        conditionsMenu.add(restNItem);
+
+        final JMenuItem restDItem = new JMenuItem("restart as spring");
+        restDItem.addActionListener(e -> {
+            type = 0;
+            init(allBody.size()-1);
+        });
+        conditionsMenu.add(restDItem);
+
         final JSlider js = new JSlider(JSlider.HORIZONTAL,0,100,1);
         js.setValue((int) (Body.dt * 10000));
 
-        js.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                Body.dt = ((double) js.getValue()) /10000;
-
-            }
-        });
+        js.addChangeListener(e -> Body.dt = ((double) js.getValue()) /10000);
         menuBar.add(js);
 
         final JPanel l = new JPanel() {
@@ -465,11 +447,10 @@ public class Main extends JFrame{
                 }
 
                 try {
-                    Thread.sleep(1);
+                    Thread.sleep(delay);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
 
                 repaint();
             }
